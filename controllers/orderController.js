@@ -3,8 +3,10 @@ import userModel from "../models/userModel.js";
 import { sendGmailOrderEmail } from "../utils/gmailEmailService.js";
 import { sendOrderEmail } from "../utils/resendEmailService.js";
 import { orderTemplate } from "../utils/resendOrderTemplate.js";
+
 import Stripe from "stripe";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/sendEmail.js";
 //Gateway initialization
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -42,20 +44,26 @@ const placeOrder = async (req, res) => {
       date: Date.now(),
     };
 
-    
     const newOrder = new orderModel(orderData);
     await newOrder.save();
     //Only clear cart if user exists
     if (userId) {
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
     }
-    
+
     const html = orderTemplate(orderData);
-    sendGmailOrderEmail(
-      address.email,
-      "Your ShopSage Order Confirmation",
-      html
-    );
+    // sendGmailOrderEmail(
+    //   address.email,
+    //   "Your ShopSage Order Confirmation",
+    //   html
+    // );
+    console.log(address.email);
+    
+    sendEmail({
+    to: address.email,
+    subject: "Your ShopSage Order Confirmation",
+    html: html
+});
     res.json({ success: true, message: "Order Placed and Email sent" });
   } catch (error) {
     console.log(error);
