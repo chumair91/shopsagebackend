@@ -22,12 +22,7 @@ const server = createServer(app);
 // Initialize Socket.IO with CORS
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:3000",
-      "https://shopsageadmin.vercel.app" // <-- Add your frontend URL
-    ],
+origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000",process.env.VERCEL_FRONTEND_URL,process.env.VERCEL_ADMIN_URL], // Add your frontend URLs
     credentials: true
   },
   transports: ['websocket', 'polling']
